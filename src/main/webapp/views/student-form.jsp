@@ -1,233 +1,86 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
+        <!-- Dynamic Title using c:choose -->
         <c:choose>
-            <c:when test="${student != null}">Edit Student</c:when>
+            <c:when test="${student != null}">Edit Student: ${student.fullName}</c:when>
             <c:otherwise>Add New Student</c:otherwise>
         </c:choose>
     </title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 10px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 600px;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 28px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .required {
-            color: #dc3545;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            text-align: center;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        .info-text {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f0f2f5; }
+        .container { max-width: 600px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #1e3a8a; margin-bottom: 25px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #374151; }
+        input[type="text"], input[type="email"] { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 4px; box-sizing: border-box; }
+        input[readonly] { background-color: #f3f4f6; cursor: not-allowed; }
+        .btn-submit { background-color: #10b981; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; transition: background-color 0.2s; }
+        .btn-cancel { background-color: #6b7280; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; }
+        .btn-submit:hover { background-color: #059669; }
+        .error { color: #ef4444; font-size: 0.875rem; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>
+    <!-- Dynamic Heading -->
+    <h2>
         <c:choose>
-            <c:when test="${student != null}">
-                ✏️ Edit Student
-            </c:when>
-            <c:otherwise>
-                ➕ Add New Student
-            </c:otherwise>
+            <c:when test="${student != null}">✏️ Edit Student</c:when>
+            <c:otherwise>➕ Add New Student</c:otherwise>
         </c:choose>
-    </h1>
+    </h2>
 
     <form action="student" method="POST">
-        <!-- Hidden field for action -->
-        <input type="hidden" name="action"
-               value="${student != null ? 'update' : 'insert'}">
 
-        <!-- Hidden field for ID (only for update) -->
+        <!-- Hidden field for action (insert or update) -->
+        <input type="hidden" name="action"
+               value="<c:out value="${student != null ? 'update' : 'insert'}"/>">
+
+        <!-- Hidden field for ID (ONLY if editing) -->
         <c:if test="${student != null}">
             <input type="hidden" name="id" value="${student.id}">
         </c:if>
 
-        <!-- Student Code -->
         <div class="form-group">
-            <label for="studentCode">
-                Student Code <span class="required">*</span>
-            </label>
-            <input type="text"
-                   id="studentCode"
-                   name="studentCode"
+            <label for="studentCode">Student Code *</label>
+            <input type="text" id="studentCode" name="studentCode"
                    value="${student.studentCode}"
-            ${student != null ? 'readonly' : 'required'}
-                   placeholder="e.g., SV001, IT123">
-            <p class="info-text">Format: 2 letters + 3+ digits</p>
+                   <c:if test="${student != null}">readonly</c:if>
+                   required>
+            <c:if test="${student != null}"><small style="color: #666;">Student code cannot be changed.</small></c:if>
         </div>
 
-        <!-- Full Name -->
         <div class="form-group">
-            <label for="fullName">
-                Full Name <span class="required">*</span>
-            </label>
-            <input type="text"
-                   id="fullName"
-                   name="fullName"
-                   value="${student.fullName}"
-                   required
-                   placeholder="Enter full name">
+            <label for="fullName">Full Name *</label>
+            <input type="text" id="fullName" name="fullName"
+                   value="${student.fullName}" required>
         </div>
 
-        <!-- Email -->
         <div class="form-group">
-            <label for="email">
-                Email <span class="required">*</span>
-            </label>
-            <input type="email"
-                   id="email"
-                   name="email"
-                   value="${student.email}"
-                   required
-                   placeholder="student@example.com">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email"
+                   value="${student.email}">
         </div>
 
-        <!-- Major -->
         <div class="form-group">
-            <label for="major">
-                Major <span class="required">*</span>
-            </label>
-            <select id="major" name="major" required>
-                <option value="">-- Select Major --</option>
-                <option value="Computer Science"
-                ${student.major == 'Computer Science' ? 'selected' : ''}>
-                    Computer Science
-                </option>
-                <option value="Information Technology"
-                ${student.major == 'Information Technology' ? 'selected' : ''}>
-                    Information Technology
-                </option>
-                <option value="Software Engineering"
-                ${student.major == 'Software Engineering' ? 'selected' : ''}>
-                    Software Engineering
-                </option>
-                <option value="Business Administration"
-                ${student.major == 'Business Administration' ? 'selected' : ''}>
-                    Business Administration
-                </option>
-            </select>
+            <label for="major">Major *</label>
+            <input type="text" id="major" name="major"
+                   value="${student.major}" required>
         </div>
 
-        <!-- Buttons -->
-        <div class="button-group">
-            <button type="submit" class="btn btn-primary">
-                <c:choose>
-                    <c:when test="${student != null}">
-                        💾 Update Student
-                    </c:when>
-                    <c:otherwise>
-                        ➕ Add Student
-                    </c:otherwise>
-                </c:choose>
-            </button>
-            <a href="student?action=list" class="btn btn-secondary">
-                ❌ Cancel
-            </a>
-        </div>
+        <!-- Submit button with dynamic text -->
+        <button type="submit" class="btn-submit">
+            <c:choose>
+                <c:when test="${student != null}">💾 Update Student</c:when>
+                <c:otherwise>💾 Save Student</c:otherwise>
+            </c:choose>
+        </button>
+        <a href="student?action=list" class="btn-cancel">Cancel</a>
     </form>
 </div>
 </body>

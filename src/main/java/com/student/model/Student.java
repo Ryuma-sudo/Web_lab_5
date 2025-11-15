@@ -3,6 +3,7 @@ package com.student.model;
 import java.sql.Timestamp;
 
 public class Student {
+    // Private attributes
     private int id;
     private String studentCode;
     private String fullName;
@@ -10,11 +11,11 @@ public class Student {
     private String major;
     private Timestamp createdAt;
 
-    // No-arg constructor (required for JavaBean)
+    // No-arg constructor
     public Student() {
     }
 
-    // Constructor for creating new student (without ID)
+    // Parameterized constructor (without id)
     public Student(String studentCode, String fullName, String email, String major) {
         this.studentCode = studentCode;
         this.fullName = fullName;
@@ -22,7 +23,7 @@ public class Student {
         this.major = major;
     }
 
-    // Getters and Setters
+    // Getters and setters
     public int getId() {
         return id;
     }
@@ -71,6 +72,7 @@ public class Student {
         this.createdAt = createdAt;
     }
 
+    // Override toString()
     @Override
     public String toString() {
         return "Student{" +
@@ -79,6 +81,7 @@ public class Student {
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", major='" + major + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }
