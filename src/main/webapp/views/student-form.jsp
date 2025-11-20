@@ -5,9 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <title>
-        <!-- Dynamic Title using c:choose -->
         <c:choose>
-            <c:when test="${student != null}">Edit Student: ${student.fullName}</c:when>
+            <c:when test="${student != null && student.id != 0}">Edit Student</c:when>
             <c:otherwise>Add New Student</c:otherwise>
         </c:choose>
     </title>
@@ -22,27 +21,24 @@
         .btn-submit { background-color: #10b981; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; transition: background-color 0.2s; }
         .btn-cancel { background-color: #6b7280; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; }
         .btn-submit:hover { background-color: #059669; }
-        .error { color: #ef4444; font-size: 0.875rem; display: block; margin-top: 5px; }
+
+        /* Exercise 6: Error Message Style */
+        .error-msg { color: #ef4444; font-size: 0.875rem; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Dynamic Heading -->
     <h2>
         <c:choose>
-            <c:when test="${student != null}">✏️ Edit Student</c:when>
+            <c:when test="${student != null && student.id != 0}">✏️ Edit Student</c:when>
             <c:otherwise>➕ Add New Student</c:otherwise>
         </c:choose>
     </h2>
 
     <form action="student" method="POST">
+        <input type="hidden" name="action" value="<c:out value="${student != null && student.id != 0 ? 'update' : 'insert'}"/>">
 
-        <!-- Hidden field for action (insert or update) -->
-        <input type="hidden" name="action"
-               value="<c:out value="${student != null ? 'update' : 'insert'}"/>">
-
-        <!-- Hidden field for ID (ONLY if editing) -->
-        <c:if test="${student != null}">
+        <c:if test="${student != null && student.id != 0}">
             <input type="hidden" name="id" value="${student.id}">
         </c:if>
 
@@ -50,33 +46,51 @@
             <label for="studentCode">Student Code *</label>
             <input type="text" id="studentCode" name="studentCode"
                    value="${student.studentCode}"
-                   <c:if test="${student != null}">readonly</c:if>
+                   <c:if test="${student != null && student.id != 0}">readonly</c:if>
                    required>
-            <c:if test="${student != null}"><small style="color: #666;">Student code cannot be changed.</small></c:if>
+
+            <c:if test="${not empty errorCode}">
+                <span class="error-msg">⚠️ ${errorCode}</span>
+            </c:if>
+
+            <c:if test="${student != null && student.id != 0}">
+                <small style="color: #666;">Student code cannot be changed.</small>
+            </c:if>
         </div>
 
         <div class="form-group">
             <label for="fullName">Full Name *</label>
             <input type="text" id="fullName" name="fullName"
                    value="${student.fullName}" required>
+
+            <c:if test="${not empty errorName}">
+                <span class="error-msg">⚠️ ${errorName}</span>
+            </c:if>
         </div>
 
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" name="email"
                    value="${student.email}">
+
+            <c:if test="${not empty errorEmail}">
+                <span class="error-msg">⚠️ ${errorEmail}</span>
+            </c:if>
         </div>
 
         <div class="form-group">
             <label for="major">Major *</label>
             <input type="text" id="major" name="major"
                    value="${student.major}" required>
+
+            <c:if test="${not empty errorMajor}">
+                <span class="error-msg">⚠️ ${errorMajor}</span>
+            </c:if>
         </div>
 
-        <!-- Submit button with dynamic text -->
         <button type="submit" class="btn-submit">
             <c:choose>
-                <c:when test="${student != null}">💾 Update Student</c:when>
+                <c:when test="${student != null && student.id != 0}">💾 Update Student</c:when>
                 <c:otherwise>💾 Save Student</c:otherwise>
             </c:choose>
         </button>

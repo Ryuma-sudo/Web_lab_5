@@ -19,6 +19,18 @@ public class StudentDAO {
         return DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
     }
 
+    // Helper to map ResultSet row to Student object
+    private Student mapResultSetToStudent(ResultSet rs) throws SQLException {
+        Student student = new Student();
+        student.setId(rs.getInt("id"));
+        student.setStudentCode(rs.getString("student_code"));
+        student.setFullName(rs.getString("full_name"));
+        student.setEmail(rs.getString("email"));
+        student.setMajor(rs.getString("major"));
+        student.setCreatedAt(rs.getTimestamp("created_at"));
+        return student;
+    }
+
     // Get all students
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
@@ -29,14 +41,7 @@ public class StudentDAO {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Student student = new Student();
-                student.setId(rs.getInt("id"));
-                student.setStudentCode(rs.getString("student_code"));
-                student.setFullName(rs.getString("full_name"));
-                student.setEmail(rs.getString("email"));
-                student.setMajor(rs.getString("major"));
-                student.setCreatedAt(rs.getTimestamp("created_at"));
-                students.add(student);
+                students.add(mapResultSetToStudent(rs));
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -56,13 +61,7 @@ public class StudentDAO {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    student = new Student();
-                    student.setId(rs.getInt("id"));
-                    student.setStudentCode(rs.getString("student_code"));
-                    student.setFullName(rs.getString("full_name"));
-                    student.setEmail(rs.getString("email"));
-                    student.setMajor(rs.getString("major"));
-                    student.setCreatedAt(rs.getTimestamp("created_at"));
+                    student = mapResultSetToStudent(rs);
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
@@ -128,13 +127,88 @@ public class StudentDAO {
         }
     }
 
-    // Test method (remove after testing)
+    // --- EXERCISE 5: SEARCH ---
+    public List<Student> searchStudents(String keyword) {
+        List<Student> students = new ArrayList<>();
+        // Search across code, name, and email
+        String sql = "SELECT * FROM students WHERE student_code LIKE ? OR full_name LIKE ? OR email LIKE ? ORDER BY id DESC";
+        String searchPattern = "%" + keyword + "%";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, searchPattern);
+            pstmt.setString(2, searchPattern);
+            pstmt.setString(3, searchPattern);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    students.add(mapResultSetToStudent(rs));
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return students;
+    }
+
+    // --- EXERCISE 7: SORTING ---
+    public List<Student> getStudentsSorted(String sortBy, String order) {
+        List<Student> students = new ArrayList<>();
+
+        // Validate column name to prevent SQL Injection
+        String validSortColumn = "id";
+        if (sortBy != null && (sortBy.equals("student_code") || sortBy.equals("full_name") ||
+                sortBy.equals("email") || sortBy.equals("major"))) {
+            validSortColumn = sortBy;
+        }
+
+        // Validate order
+        String sortOrder = "ASC";
+        if ("desc".equalsIgnoreCase(order)) {
+            sortOrder = "DESC";
+        }
+
+        String sql = "SELECT * FROM students ORDER BY " + validSortColumn + " " + sortOrder;
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                students.add(mapResultSetToStudent(rs));
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return students;
+    }
+
+    // --- EXERCISE 7: FILTERING ---
+    public List<Student> getStudentsByMajor(String major) {
+        List<Student> students = new ArrayList<>();
+        String sql = "SELECT * FROM students WHERE major = ? ORDER BY id DESC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, major);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    students.add(mapResultSetToStudent(rs));
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return students;
+    }
+
+    // Test method
     public static void main(String[] args) {
         StudentDAO dao = new StudentDAO();
+        System.out.println("Testing connection...");
         List<Student> students = dao.getAllStudents();
         System.out.println("Total students: " + students.size());
-        for (Student s : students) {
-            System.out.println(s);
-        }
     }
 }
