@@ -1,16 +1,16 @@
 ## Lab 5: EXERCISES: SERVLET & MVC PATTERN
 
 ### STUDENT INFORMATION:
-Name: Nguyễn Quang Trực
-Student ID: ITCSIU23041
-Class: Group 2
+- Name: Nguyễn Quang Trực
+- Student ID: ITCSIU23041
+- Class: Group 2
 
 ### COMPLETED EXERCISES:
-[x] Exercise 5: Search
-[x] Exercise 6: Validation
-[x] Exercise 7: Sorting & Filtering
-[x] Exercise 8: Pagination
-[ ] Bonus 1: Export Excel
+- [x] Exercise 5: Search
+- [x] Exercise 6: Validation
+- [x] Exercise 7: Sorting & Filtering
+- [x] Exercise 8: Pagination
+- [ ] Bonus 1: Export Excel
 
 ### MVC COMPONENTS:
 - Model: Student.java
