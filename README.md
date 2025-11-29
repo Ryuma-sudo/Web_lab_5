@@ -1,4 +1,32 @@
-## Lab 5: Code Flow Report (Exercises 1-7)
+## Lab 5: EXERCISES: SERVLET & MVC PATTERN
+
+### STUDENT INFORMATION:
+Name: Nguyễn Quang Trực
+Student ID: ITCSIU23041
+Class: Group 2
+
+### COMPLETED EXERCISES:
+[x] Exercise 5: Search
+[x] Exercise 6: Validation
+[x] Exercise 7: Sorting & Filtering
+[x] Exercise 8: Pagination
+[ ] Bonus 1: Export Excel
+
+### MVC COMPONENTS:
+- Model: Student.java
+- DAO: StudentDAO.java
+- Controller: StudentController.java
+- Views: student-list.jsp, student-form.jsp
+
+### FEATURES IMPLEMENTED:
+- All CRUD operations
+- Search functionality
+- Server-side validation
+- Sorting by columns
+- Filter by major
+- Pagination
+
+---
 
 This report traces the end-to-end execution flow for the core CRUD operations as well as the advanced Search, Validation, and Sorting/Filtering features. The flow demonstrates the MVC (Model-View-Controller) pattern, showing how each layer interacts to fulfill a user request.
 
